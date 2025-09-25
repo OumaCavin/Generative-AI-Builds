@@ -1,0 +1,10 @@
+# Python venv
+venv/
+jac-env/
+
+# VS Code
+.vscode/
+
+# Cache
+__pycache__/
+*.pyc
