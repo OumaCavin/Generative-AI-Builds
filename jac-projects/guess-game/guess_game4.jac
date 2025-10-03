@@ -13,6 +13,7 @@ node turn {
     can check with GuessGame entry;
 }
 
-with entry {
+# Run the game
+ with entry {
     GuessGame() spawn root;
 }

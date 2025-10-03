@@ -1,16 +1,26 @@
 impl GuessGame.start {
-    print("Welcome to Guess the Number!");
-    print(f"Your guess is {self.guess}");
-    visit --> turn;
+    if not [root --> (`?turn)] {
+        next = root ++> turn(random.randint(1, 10));
+    } else {
+        next = [root --> (`?turn)];
+    }
+    visit next;
 }
 
 impl GuessGame.process_guess {
-    if self.guess > self.correct_number {
-        print("Too high!");
-    } elif self.guess < self.correct_number {
-        print("Too low!");
+    if [-->] {
+        visit [-->];
     } else {
-        print("Congratulations! You guessed correctly.");
-        disengage;
+        if self.guess < here.correct_number {
+            print("Too high!");
+            here ++> turn(here.correct_number);
+        } elif self.guess > here.correct_number {
+            print("Too low!");
+            here ++> turn(here.correct_number);
+        } else {
+            print("Congratulations! You guessed correctly.");
+            disengage;
+        }
     }
+
 }

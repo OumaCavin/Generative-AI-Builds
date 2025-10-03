@@ -1,7 +1,6 @@
 """A Number Guessing Game"""
 import random;
 
-
 obj Game {
     has attempts: int, won: bool = False;
 
