@@ -60,7 +60,7 @@ Generative-AI-Builds/
 
 
 > 🎥 Streamlit Interface Screenshot:  
-> ![Streamlit UI](https://github.com/OumaCavin/Generative-AI-Builds/tree/main/jac-projects/video-narrator/assets/streamlit_ui.png)
+![Streamlit UI Screenshot](assets/streamlit_ui.png)
 
 ---
 
@@ -218,10 +218,15 @@ jac streamlit client.jac
 ## 🧑‍💻 Author
 
 **Cavin Otieno Ouma**
+
 🖥️ *MIS Developer & AI Enthusiast*
+
 📧 [cavinouma@gmail.com](mailto:cavinouma@gmail.com)
+
 🔗 [LinkedIn Profile](https://linkedin.com/in/cavin-otieno-ouma)
+
 📂 Project Repo: [Video Narrator on GitHub](https://github.com/OumaCavin/Generative-AI-Builds/tree/main/jac-projects/video-narrator)
+
 🌐 Main Repository: [Generative-AI-Builds](https://github.com/OumaCavin/Generative-AI-Builds.git)
 
 ---
