@@ -221,13 +221,10 @@ jac streamlit client.jac
 
 🖥️ *MIS Developer & AI Enthusiast*
 
-📧 [cavinouma@gmail.com](mailto:cavinouma@gmail.com)
-
-🔗 [LinkedIn Profile](https://linkedin.com/in/cavin-otieno-ouma)
-
-📂 Project Repo: [Video Narrator on GitHub](https://github.com/OumaCavin/Generative-AI-Builds/tree/main/jac-projects/video-narrator)
-
-🌐 Main Repository: [Generative-AI-Builds](https://github.com/OumaCavin/Generative-AI-Builds.git)
+ 📧 [cavin.otieno012@gmail.com](mailto:cavin.otieno012@gmail.com)
+ 🔗 [LinkedIn Profile](https://www.linkedin.com/in/cavin-otieno-9a841260/)
+ 📂 Project Repo: [Video Narrator on GitHub](https://github.com/OumaCavin/Generative-AI-Builds/tree/main/jac-projects/video-narrator)
+ 🌐 Main Repository: [Generative-AI-Builds](https://github.com/OumaCavin/Generative-AI-Builds.git)
 
 ---
 
