@@ -1,0 +1,92 @@
+# =========================
+# Python & Virtual Environment
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+env/
+venv/
+.jac-env/
+jac-env/
+.venv/
+pip-wheel-metadata/
+
+# =========================
+# Jac Language Files
+# =========================
+*.jacd
+*.jactemp
+.jac_cache/
+jac_out/
+.mcp_cache/
+
+# =========================
+# IDE / Editor Config Files
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*.bak
+*.tmp
+*~
+.DS_Store
+
+# =========================
+# Logs & Reports
+# =========================
+*.log
+logs/
+nohup.out
+coverage/
+.coverage
+htmlcov/
+
+# =========================
+# Environment & Secrets
+# =========================
+.env
+.env.local
+.env.*
+*.key
+*.pem
+*.crt
+
+# =========================
+# Streamlit / Cache
+# =========================
+.streamlit/
+.streamlit/secrets.toml
+.streamlit/config.toml
+.cache/
+__cache__/
+uploads/
+chroma/
+
+# =========================
+# OS Generated Files
+# =========================
+Thumbs.db
+ehthumbs.db
+Icon?
+Desktop.ini
+
+# =========================
+# Jupyter / Runtimes
+# =========================
+.ipynb_checkpoints
+*.ipynb
+
+# =========================
+# Temporary Files
+# =========================
+tmp/
+temp/
+*.tmp

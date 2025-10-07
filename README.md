@@ -2,6 +2,7 @@
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Jac](https://img.shields.io/badge/JacLang-FF6F00?style=for-the-badge&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)
 
 A collection of experiments and projects exploring **Generative AI** using the **Jac Programming Language (Jaseci Stack)** and related tools.  
 All projects share a single virtual environment (`jac-env/`) for easier dependency management.
@@ -11,9 +12,9 @@ All projects share a single virtual environment (`jac-env/`) for easier dependen
 ## 📂 Repository Structure
 
 ```
-
 Generative-AI-Builds/
-│── jac-projects/
+│
+├── jac-projects/
 │   ├── hello-world/
 │   │   ├── hello.jac
 │   │   └── README.md
@@ -31,20 +32,31 @@ Generative-AI-Builds/
 │   │   ├── guess_game6.jac
 │   │   └── guess_game6.impl.jac
 │   │
-│   ├── ai-chatbot/
-│   │   ├── chatbot.jac
-│   │   └── README.md
+│   ├── video-narrator/
+│   │   ├── client.jac
+│   │   ├── server.jac
+│   │   ├── server.impl.jac
+│   │   ├── mcp_server.jac
+│   │   ├── mcp_client.jac
+│   │   ├── tools.jac
+│   │   ├── requirements.txt
+│   │   ├── .gitignore
+│   │   ├── README.md
+│   │   ├── chroma/
+│   │   ├── uploads/
+│   │   └── assets/
+│   │       └── streamlit_ui.png
 │   │
 │   └── graph-demo/
 │       ├── graph_example.jac
 │       └── README.md
 │
-│── .gitignore
-│── README.md   # Main repo readme (overview of all projects)
-│── LICENSE
-│── jac-env/    # virtual environment (not pushed to GitHub)
+├── .gitignore
+├── README.md        # Main repo overview (all JAC projects)
+├── LICENSE
+└── jac-env/         # Python virtual environment
 
-````
+```
 
 ---
 
@@ -54,8 +66,9 @@ Generative-AI-Builds/
 |---------|-------------|------|
 | **Hello World** | First Jac program (prints a message) | [hello-world](jac-projects/hello-world) |
 | **Guess Game** | Classic number guessing game built step-by-step in Jac | [guess-game](jac-projects/guess-game) |
-| **AI Chatbot** | A simple conversational chatbot in Jac | [ai-chatbot](jac-projects/ai-chatbot) |
+| **Video Narrator** | Converts silent videos into narrated explanations using LLMs+Streamlite UI | [video-narrator](jac-projects/video-narrator) |
 | **Graph Demo** | Demonstrates graph traversal in Jac | [graph-demo](jac-projects/graph-demo) |
+
 
 ---
 
