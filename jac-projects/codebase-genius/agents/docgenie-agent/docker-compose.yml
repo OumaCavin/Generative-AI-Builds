@@ -1,0 +1,129 @@
+# DocGenie Agent Docker Compose Configuration
+# Phase 5: Documentation Generation Service Orchestration
+# Usage: docker-compose up -d
+# Management: docker-compose logs -f, docker-compose down
+
+version: '3.8'
+
+services:
+  docgenie-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: docgenie-agent:1.0.0
+    container_name: docgenie-agent
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - DOCGENIE_CONFIG_PATH=/app/config/config.json
+      - DOCGENIE_LOG_LEVEL=INFO
+      - DOCGENIE_OUTPUT_DIR=/app/outputs
+      - JAC_SERVER_HOST=0.0.0.0
+      - JAC_SERVER_PORT=8080
+    volumes:
+      # Mount configuration and output directories
+      - ./config:/app/config:ro
+      - ./outputs:/app/outputs
+      - ./logs:/app/logs
+      - ./templates:/app/templates:ro
+      # Mount test data for demo purposes
+      - ./tests/demo_data:/app/tests/demo_data:ro
+    networks:
+      - docgenie-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Optional: Monitoring and observability
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: docgenie-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - docgenie-network
+    profiles:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: docgenie-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    networks:
+      - docgenie-network
+    profiles:
+      - monitoring
+
+  # Optional: Load testing
+  load-tester:
+    build:
+      context: .
+      dockerfile: Dockerfile.loadtest
+    container_name: docgenie-loadtest
+    depends_on:
+      - docgenie-agent
+    environment:
+      - TARGET_URL=http://docgenie-agent:8080
+      - TEST_DURATION=30s
+      - CONCURRENT_USERS=10
+    networks:
+      - docgenie-network
+    profiles:
+      - testing
+
+volumes:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  docgenie-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# Development override for local development
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+---
+# docker-compose.dev.yml
+version: '3.8'
+
+services:
+  docgenie-agent:
+    build:
+      target: development
+    environment:
+      - DOCGENIE_LOG_LEVEL=DEBUG
+      - PYTHONPATH=/app
+    volumes:
+      # Mount source code for hot reloading
+      - .:/app
+      - /app/__pycache__
+    command: ["python", "-m", "pytest", "tests/test_documentation.py", "-v"]

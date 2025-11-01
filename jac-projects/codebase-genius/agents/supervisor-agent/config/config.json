@@ -1,0 +1,232 @@
+{
+  "agent_info": {
+    "name": "Supervisor Agent",
+    "version": "1.0.0",
+    "description": "Multi-agent orchestration system for coordinating Repository Mapper, Code Analyzer, and DocGenie agents",
+    "phase": 6,
+    "author": "Cavin Otieno"
+  },
+  "agent_connections": {
+    "repository_mapper": {
+      "endpoint": "http://localhost:8081",
+      "health_check_path": "/health",
+      "capabilities": ["clone_repository", "generate_file_tree", "summarize_readme"],
+      "timeout_seconds": 300,
+      "retry_attempts": 3,
+      "load_weight": 1.0
+    },
+    "code_analyzer": {
+      "endpoint": "http://localhost:8082",
+      "health_check_path": "/health", 
+      "capabilities": ["parse_code", "build_ccg", "extract_relationships"],
+      "timeout_seconds": 600,
+      "retry_attempts": 3,
+      "load_weight": 1.5
+    },
+    "docgenie": {
+      "endpoint": "http://localhost:8083",
+      "health_check_path": "/health",
+      "capabilities": ["generate_documentation", "create_diagrams", "assess_quality"],
+      "timeout_seconds": 400,
+      "retry_attempts": 3,
+      "load_weight": 1.2
+    }
+  },
+  "workflow_settings": {
+    "max_concurrent_workflows": 10,
+    "default_priority": 5,
+    "max_retries_per_agent": 3,
+    "retry_delay_seconds": 5,
+    "workflow_timeout_minutes": 30,
+    "heartbeat_interval_seconds": 30
+  },
+  "priority_settings": {
+    "priority_levels": {
+      "1": "critical",
+      "2": "high", 
+      "3": "medium-high",
+      "4": "medium",
+      "5": "normal",
+      "6": "low-medium",
+      "7": "low",
+      "8": "background",
+      "9": "maintenance",
+      "10": "deferred"
+    },
+    "default_queue_size": 100,
+    "priority_aging_factor": 0.9
+  },
+  "error_handling": {
+    "recovery_strategies": [
+      {
+        "trigger": "agent_timeout",
+        "action": "retry_with_backoff",
+        "max_attempts": 3,
+        "backoff_multiplier": 2
+      },
+      {
+        "trigger": "agent_unavailable", 
+        "action": "queue_for_later",
+        "delay_minutes": 5
+      },
+      {
+        "trigger": "workflow_failure",
+        "action": "partial_completion",
+        "continue_with_available_agents": true
+      }
+    ],
+    "fallback_mechanisms": {
+      "agent_failure": "continue_with_remaining_agents",
+      "network_issues": "retry_with_exponential_backoff",
+      "resource_exhaustion": "queue_and_retry_later"
+    }
+  },
+  "monitoring_settings": {
+    "metrics_collection": {
+      "enabled": true,
+      "interval_seconds": 60,
+      "retention_hours": 24
+    },
+    "performance_tracking": {
+      "response_times": true,
+      "success_rates": true,
+      "queue_depth": true,
+      "agent_load": true
+    },
+    "alerting": {
+      "enabled": true,
+      "thresholds": {
+        "agent_response_time": 30,
+        "workflow_failure_rate": 0.1,
+        "queue_depth": 50,
+        "agent_unavailable": 5
+      }
+    }
+  },
+  "api_gateway_settings": {
+    "endpoints": {
+      "submit_workflow": {
+        "path": "/api/v1/submit",
+        "methods": ["POST"],
+        "rate_limit": "100/hour",
+        "required_fields": ["repository_url"],
+        "optional_fields": ["options", "priority", "format"]
+      },
+      "get_workflow_status": {
+        "path": "/api/v1/status/{workflow_id}",
+        "methods": ["GET"],
+        "rate_limit": "1000/hour"
+      },
+      "get_workflow_result": {
+        "path": "/api/v1/result/{workflow_id}",
+        "methods": ["GET"],
+        "rate_limit": "500/hour"
+      },
+      "list_workflows": {
+        "path": "/api/v1/workflows",
+        "methods": ["GET"],
+        "rate_limit": "200/hour"
+      },
+      "cancel_workflow": {
+        "path": "/api/v1/cancel/{workflow_id}",
+        "methods": ["DELETE"],
+        "rate_limit": "50/hour"
+      },
+      "health_check": {
+        "path": "/health",
+        "methods": ["GET"],
+        "rate_limit": "unlimited"
+      }
+    },
+    "response_formats": {
+      "default": "json",
+      "supported": ["json", "xml", "html"],
+      "html_template": "dashboard"
+    },
+    "authentication": {
+      "enabled": false,
+      "methods": ["api_key", "bearer_token"],
+      "default_permissions": ["submit_workflow", "get_status"]
+    }
+  },
+  "resource_management": {
+    "memory_limits": {
+      "workflow_data_mb": 100,
+      "agent_results_mb": 500,
+      "total_system_mb": 2048
+    },
+    "disk_usage": {
+      "max_temp_storage_gb": 10,
+      "cleanup_after_hours": 24,
+      "temp_file_retention": 3600
+    },
+    "cpu_throttling": {
+      "max_concurrent_analyses": 3,
+      "cpu_limit_percent": 80,
+      "memory_limit_percent": 85
+    }
+  },
+  "security_settings": {
+    "input_validation": {
+      "repository_url_validation": true,
+      "max_url_length": 2048,
+      "allowed_protocols": ["https", "http"],
+      "blocked_domains": []
+    },
+    "rate_limiting": {
+      "enabled": true,
+      "requests_per_minute": 60,
+      "burst_limit": 10
+    },
+    "data_protection": {
+      "sanitize_inputs": true,
+      "encrypt_sensitive_data": false,
+      "log_sanitization": true
+    }
+  },
+  "integration_settings": {
+    "external_apis": {
+      "github_api": {
+        "enabled": false,
+        "rate_limit": "5000/hour",
+        "timeout_seconds": 10
+      },
+      "gitlab_api": {
+        "enabled": false,
+        "rate_limit": "3000/hour", 
+        "timeout_seconds": 10
+      }
+    },
+    "webhook_support": {
+      "enabled": false,
+      "endpoints": ["/webhook/github", "/webhook/gitlab"],
+      "signature_validation": true
+    },
+    "notification_settings": {
+      "email_notifications": false,
+      "slack_integration": false,
+      "webhook_notifications": false
+    }
+  },
+  "development_settings": {
+    "debug_mode": false,
+    "mock_agents": true,
+    "log_level": "INFO",
+    "verbose_logging": false,
+    "test_mode": false
+  },
+  "deployment_settings": {
+    "container_registry": "codebase-genius",
+    "image_tag": "supervisor:latest",
+    "service_port": 8080,
+    "health_check_port": 8080,
+    "replicas": 3,
+    "autoscaling": {
+      "enabled": true,
+      "min_replicas": 1,
+      "max_replicas": 10,
+      "cpu_threshold": 70,
+      "memory_threshold": 80
+    }
+  }
+}

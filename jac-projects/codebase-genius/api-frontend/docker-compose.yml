@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  codebase-genius:
+    build:
+      context: .
+      dockerfile: api-frontend/Dockerfile
+    ports:
+      - "8000:8000"  # API
+      - "8501:8501"  # Frontend
+    environment:
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - STREAMLIT_PORT=8501
+      - STREAMLIT_HOST=0.0.0.0
+      - DEBUG=false
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./logs:/app/logs
+      - ./temp:/app/temp
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Add Redis for caching
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  # Optional: Add PostgreSQL for persistent storage
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=codebase_genius
+      - POSTGRES_USER=genius
+      - POSTGRES_PASSWORD=genius_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+  postgres_data:

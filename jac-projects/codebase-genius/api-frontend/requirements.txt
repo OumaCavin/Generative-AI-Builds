@@ -1,0 +1,78 @@
+# Codebase Genius API and Frontend Requirements
+# Core dependencies for the multi-agent documentation system
+
+# API Server
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+aiofiles==23.2.1
+
+# HTTP Client and Networking
+requests==2.31.0
+aiohttp==3.9.1
+httpx==0.25.2
+
+# Data Processing and Analysis
+pandas==2.1.4
+numpy==1.25.2
+
+# Web Framework - Streamlit Frontend
+streamlit==1.28.1
+plotly==5.17.0
+
+# Code Parsing and Analysis
+tree-sitter==0.20.2
+tree-sitter-python==0.20.4
+tree-sitter-javascript==0.20.1
+
+# Documentation Generation
+markdown==3.5.1
+markdown-extensions==0.9.1
+Pygments==2.17.2
+jinja2==3.1.2
+
+# File Processing
+zipfile36==0.1.3
+chardet==5.2.0
+
+# System Utilities
+psutil==5.9.6
+
+# Security and Validation
+cryptography==41.0.8
+pydantic[email]==2.5.0
+email-validator==2.1.0
+
+# Development and Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+
+# Configuration Management
+python-dotenv==1.0.0
+pyyaml==6.0.1
+
+# Logging and Monitoring
+structlog==23.2.0
+prometheus-client==0.19.0
+
+# Database (Optional - for persistent storage)
+# sqlalchemy==2.0.23
+# alembic==1.13.0
+# redis==5.0.1
+
+# Additional Utilities
+click==8.1.7
+rich==13.7.0
+typer==0.9.0
+
+# Optional: For advanced features
+# graphviz==0.20.1
+# matplotlib==3.8.2
+# seaborn==0.13.0
+# wordcloud==1.9.3
+
+# Development Dependencies
+# black==23.11.0
+# flake8==6.1.0
+# mypy==1.7.1

@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  code-analyzer:
+    build: .
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./logs:/app/logs
+      - ./cache:/app/cache
+      - ./output:/app/output
+      - ./parsers:/app/parsers
+      - ./temp:/app/temp
+    environment:
+      - JAC_SERVE_HOST=0.0.0.0
+      - JAC_SERVE_PORT=8081
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=INFO
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    
+  # Optional: Redis for caching (uncomment if needed)
+  # redis:
+  #   image: redis:7-alpine
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis_data:/data
+  #   restart: unless-stopped
+
+  # Optional: Prometheus for metrics (uncomment if needed)
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   ports:
+  #     - "9090:9090"
+  #   volumes:
+  #     - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+  #     - prometheus_data:/prometheus
+  #   command:
+  #     - '--config.file=/etc/prometheus/prometheus.yml'
+  #     - '--storage.tsdb.path=/prometheus'
+  #     - '--web.console.libraries=/etc/prometheus/console_libraries'
+  #     - '--web.console.templates=/etc/prometheus/consoles'
+  #     - '--storage.tsdb.retention.time=200h'
+  #     - '--web.enable-lifecycle'
+
+volumes:
+  logs:
+  cache:
+  output:
+  parsers:
+  temp:
+  # Uncomment if using Redis
+  # redis_data:
+  # Uncomment if using Prometheus
+  # prometheus_data:
+
+networks:
+  default:
+    name: codebase-genius-network

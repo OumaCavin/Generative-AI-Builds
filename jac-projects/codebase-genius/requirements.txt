@@ -1,0 +1,32 @@
+# Core FastAPI and server dependencies
+fastapi==0.115.11
+uvicorn[standard]==0.34.0
+pydantic==2.10.6
+aiohttp==3.11.7
+python-multipart==0.0.20
+anyio==4.7.0
+
+# Repository and git operations
+gitpython==3.1.43
+PyGithub==2.4.0
+
+# Documentation generation
+jinja2==3.1.4
+markdown==3.7
+
+# Diagram generation
+graphviz==0.20.3
+
+# Advanced code analysis (optional but recommended)
+tree-sitter==0.25.2
+
+# Utilities
+python-dotenv==1.0.1
+requests==2.32.3
+typing-extensions==4.12.2
+
+# Development and testing (optional)
+pytest==8.3.3
+pytest-asyncio==0.24.0
+black==24.10.0
+flake8==7.1.1

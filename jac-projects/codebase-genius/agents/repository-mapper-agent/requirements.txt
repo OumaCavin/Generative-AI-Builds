@@ -1,0 +1,38 @@
+# Codebase Genius Repository Mapper - Python Dependencies
+# Install with: pip install -r requirements.txt
+
+# Core Git operations
+gitpython>=3.1.40
+
+# HTTP requests for external API calls
+requests>=2.31.0
+
+# Date and time utilities
+python-dateutil>=2.8.2
+
+# JSON handling (usually included in Python standard library)
+# Additional utilities if needed
+typing-extensions>=4.7.0
+
+# For file type detection
+python-magic>=0.4.27
+
+# For URL validation
+validators>=0.22.0
+
+# For progress tracking
+tqdm>=4.66.0
+
+# Logging and monitoring
+structlog>=23.1.0
+
+# Configuration management
+pyyaml>=6.0.1
+
+# Testing utilities
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+
+# Development utilities
+black>=23.7.0
+flake8>=6.0.0

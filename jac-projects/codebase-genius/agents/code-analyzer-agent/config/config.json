@@ -1,0 +1,313 @@
+{
+  "code_analyzer": {
+    "max_file_size": 10485760,
+    "analysis_timeout_seconds": 300,
+    "supported_languages": [
+      "python",
+      "javascript",
+      "typescript",
+      "java",
+      "cpp",
+      "c",
+      "go",
+      "rust",
+      "php",
+      "ruby"
+    ],
+    "tree_sitter_parsers": {
+      "python": {
+        "enabled": true,
+        "parser_path": "tree-sitter-python",
+        "language_name": "python",
+        "file_extensions": [".py", ".pyw"],
+        "features": {
+          "functions": true,
+          "classes": true,
+          "variables": true,
+          "imports": true,
+          "decorators": true,
+          "async_support": true
+        }
+      },
+      "javascript": {
+        "enabled": true,
+        "parser_path": "tree-sitter-javascript",
+        "language_name": "javascript",
+        "file_extensions": [".js", ".jsx", ".mjs", ".cjs"],
+        "features": {
+          "functions": true,
+          "classes": true,
+          "variables": true,
+          "imports": true,
+          "async_support": true,
+          "typescript_hints": true
+        }
+      },
+      "typescript": {
+        "enabled": true,
+        "parser_path": "tree-sitter-typescript",
+        "language_name": "typescript",
+        "file_extensions": [".ts", ".tsx"],
+        "features": {
+          "functions": true,
+          "classes": true,
+          "variables": true,
+          "imports": true,
+          "type_annotations": true,
+          "interfaces": true,
+          "enums": true
+        }
+      },
+      "java": {
+        "enabled": true,
+        "parser_path": "tree-sitter-java",
+        "language_name": "java",
+        "file_extensions": [".java"],
+        "features": {
+          "classes": true,
+          "methods": true,
+          "fields": true,
+          "interfaces": true,
+          "enums": true,
+          "packages": true,
+          "annotations": true
+        }
+      },
+      "cpp": {
+        "enabled": true,
+        "parser_path": "tree-sitter-cpp",
+        "language_name": "cpp",
+        "file_extensions": [".cpp", ".cc", ".cxx", ".hpp", ".hxx", ".c++"],
+        "features": {
+          "functions": true,
+          "classes": true,
+          "namespaces": true,
+          "templates": true,
+          "macros": true,
+          "includes": true
+        }
+      },
+      "c": {
+        "enabled": true,
+        "parser_path": "tree-sitter-c",
+        "language_name": "c",
+        "file_extensions": [".c", ".h"],
+        "features": {
+          "functions": true,
+          "structs": true,
+          "macros": true,
+          "includes": true
+        }
+      }
+    },
+    "complexity_analysis": {
+      "cyclomatic_complexity": {
+        "enabled": true,
+        "max_threshold": 10,
+        "warn_threshold": 7
+      },
+      "cognitive_complexity": {
+        "enabled": true,
+        "max_threshold": 15,
+        "warn_threshold": 10
+      },
+      "maintainability_index": {
+        "enabled": true,
+        "min_threshold": 65
+      },
+      "lines_of_code": {
+        "max_threshold": 200,
+        "warn_threshold": 100
+      }
+    },
+    "relationship_extraction": {
+      "function_calls": {
+        "enabled": true,
+        "confidence_threshold": 0.7,
+        "recursive_analysis": true
+      },
+      "inheritance": {
+        "enabled": true,
+        "confidence_threshold": 0.9,
+        "include_interfaces": true
+      },
+      "imports": {
+        "enabled": true,
+        "confidence_threshold": 0.9,
+        "resolve_aliases": true
+      },
+      "attribute_access": {
+        "enabled": true,
+        "confidence_threshold": 0.6,
+        "max_depth": 3
+      },
+      "variable_usage": {
+        "enabled": true,
+        "confidence_threshold": 0.8,
+        "track_definitions": true
+      }
+    },
+    "query_apis": {
+      "max_results": 1000,
+      "timeout_seconds": 30,
+      "cache_results": true,
+      "cache_ttl_seconds": 3600,
+      "query_types": [
+        "dependencies",
+        "dependents",
+        "call_graph",
+        "inheritance",
+        "imports",
+        "complexity_hotspots",
+        "unused_code",
+        "circular_dependencies"
+      ]
+    }
+  },
+  "performance": {
+    "max_concurrent_analyses": 4,
+    "memory_limit_mb": 1024,
+    "disk_cache_enabled": true,
+    "cache_size_mb": 512,
+    "parse_batch_size": 50,
+    "enable_parallel_parsing": true,
+    "gc_threshold": 800
+  },
+  "metrics": {
+    "calculate_complexity": true,
+    "calculate_cohesion": true,
+    "calculate_coupling": true,
+    "detect_dead_code": true,
+    "identify_hotspots": true,
+    "track_dependencies": true,
+    "analyze_architecture": true
+  },
+  "quality_assurance": {
+    "min_documentation_coverage": 0.3,
+    "max_function_length": 50,
+    "max_class_length": 500,
+    "max_parameter_count": 5,
+    "naming_conventions": {
+      "enabled": true,
+      "functions": "snake_case",
+      "classes": "PascalCase",
+      "variables": "snake_case",
+      "constants": "UPPER_SNAKE_CASE"
+    },
+    "anti_patterns": [
+      "god_object",
+      "long_method",
+      "feature_envy",
+      "data_class",
+      "primitive_obsession"
+    ]
+  },
+  "visualization": {
+    "dependency_graphs": {
+      "enabled": true,
+      "layout_engine": "dot",
+      "output_formats": ["svg", "png", "pdf"],
+      "max_nodes": 500,
+      "max_depth": 3
+    },
+    "call_graphs": {
+      "enabled": true,
+      "layout_engine": "circo",
+      "output_formats": ["svg", "png"],
+      "max_nodes": 300,
+      "include_external_calls": false
+    },
+    "complexity_heatmaps": {
+      "enabled": true,
+      "color_scheme": "viridis",
+      "output_format": "svg"
+    }
+  },
+  "output_formats": {
+    "json": {
+      "enabled": true,
+      "pretty_print": true,
+      "include_source_code": false,
+      "max_source_length": 1000
+    },
+    "xml": {
+      "enabled": false,
+      "schema_validation": true
+    },
+    "graphml": {
+      "enabled": true,
+      "include_attributes": true,
+      "compress_output": true
+    },
+    "plantuml": {
+      "enabled": true,
+      "diagram_types": ["class", "sequence", "activity"]
+    }
+  },
+  "api": {
+    "host": "0.0.0.0",
+    "port": 8081,
+    "enable_cors": true,
+    "cors_origins": ["http://localhost:3000", "http://localhost:8501"],
+    "rate_limiting": {
+      "enabled": true,
+      "requests_per_minute": 30,
+      "burst_limit": 5
+    },
+    "authentication": {
+      "enabled": false,
+      "token_required": false
+    },
+    "endpoints": {
+      "analyze_repository": "/api/analyze-repository",
+      "query_relationships": "/api/query-relationships",
+      "get_metrics": "/api/metrics",
+      "export_graph": "/api/export/graph",
+      "health_check": "/api/health"
+    }
+  },
+  "logging": {
+    "level": "INFO",
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    "file": "logs/code_analyzer.log",
+    "max_file_size_mb": 20,
+    "backup_count": 5,
+    "enable_console": true,
+    "console_level": "INFO",
+    "parse_tree_logging": false,
+    "relationship_logging": true
+  },
+  "testing": {
+    "test_repository": "/tmp/test_codebase",
+    "test_languages": ["python", "javascript"],
+    "enable_integration_tests": true,
+    "test_file_size_limit": 1048576,
+    "mock_tree_sitter": false,
+    "benchmark_mode": false
+  },
+  "external_integrations": {
+    "github_api": {
+      "enabled": false,
+      "token": null,
+      "rate_limit": 5000,
+      "timeout_seconds": 15
+    },
+    "openai_api": {
+      "enabled": false,
+      "token": null,
+      "model": "gpt-3.5-turbo",
+      "max_tokens": 2000,
+      "timeout_seconds": 45,
+      "use_for_documentation": false,
+      "use_for_explanations": false
+    }
+  },
+  "experimental_features": {
+    "ai_powered_analysis": false,
+    "semantic_analysis": false,
+    "type_inference": false,
+    "symbol_resolution": false,
+    "cross_file_analysis": true,
+    "real_time_analysis": false
+  }
+}

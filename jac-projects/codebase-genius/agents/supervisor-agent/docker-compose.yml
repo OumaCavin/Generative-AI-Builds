@@ -1,0 +1,398 @@
+# Supervisor Agent Docker Compose Configuration
+# Phase 6: Complete Multi-Agent Orchestration System
+# Usage: docker-compose up -d (starts all agents)
+# Management: docker-compose logs -f, docker-compose down
+
+version: '3.8'
+
+services:
+  # Core Supervisor Agent
+  supervisor-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: supervisor-agent:1.0.0
+    container_name: supervisor-agent
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - SUPERVISOR_CONFIG_PATH=/app/config/config.json
+      - SUPERVISOR_LOG_LEVEL=INFO
+      - SUPERVISOR_LOG_DIR=/app/logs
+      - SUPERVISOR_TEMP_DIR=/app/temp
+      - SUPERVISOR_WORKFLOW_TIMEOUT=1800
+      - SUPERVISOR_MAX_CONCURRENT=5
+      - REPO_MAPPER_ENDPOINT=http://repository-mapper:8081
+      - CODE_ANALYZER_ENDPOINT=http://code-analyzer:8082
+      - DOCGENIE_ENDPOINT=http://docgenie-agent:8083
+    volumes:
+      # Mount configuration and data directories
+      - ./config:/app/config:ro
+      - ./logs:/app/logs
+      - ./temp:/app/temp
+      - ./workflow_data:/app/workflow_data
+      - ./workflow_templates:/app/workflow_templates:ro
+      # Mount test data
+      - ./tests:/app/tests:ro
+    networks:
+      - codebase-genius-network
+    depends_on:
+      - repository-mapper
+      - code-analyzer
+      - docgenie-agent
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Repository Mapper Agent
+  repository-mapper:
+    image: codebase-genius/repository-mapper:latest
+    container_name: repository-mapper
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      - JAC_SERVER_HOST=0.0.0.0
+      - JAC_SERVER_PORT=8081
+    volumes:
+      - ./logs/repository-mapper:/app/logs
+      - ./temp:/app/temp
+    networks:
+      - codebase-genius-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Code Analyzer Agent
+  code-analyzer:
+    image: codebase-genius/code-analyzer:latest
+    container_name: code-analyzer
+    restart: unless-stopped
+    ports:
+      - "8082:8082"
+    environment:
+      - JAC_SERVER_HOST=0.0.0.0
+      - JAC_SERVER_PORT=8082
+    volumes:
+      - ./logs/code-analyzer:/app/logs
+      - ./temp:/app/temp
+    networks:
+      - codebase-genius-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/health"]
+      interval: 30s
+      timeout: 15s
+      retries: 3
+      start_period: 45s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # DocGenie Agent
+  docgenie-agent:
+    image: codebase-genius/docgenie-agent:latest
+    container_name: docgenie-agent
+    restart: unless-stopped
+    ports:
+      - "8083:8083"
+    environment:
+      - JAC_SERVER_HOST=0.0.0.0
+      - JAC_SERVER_PORT=8083
+    volumes:
+      - ./logs/docgenie-agent:/app/logs
+      - ./outputs:/app/outputs
+      - ./temp:/app/temp
+    networks:
+      - codebase-genius-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 35s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Redis for message queuing and caching
+  redis:
+    image: redis:7-alpine
+    container_name: redis-cache
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - codebase-genius-network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 3s
+      retries: 5
+
+  # NGINX Load Balancer and Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    networks:
+      - codebase-genius-network
+    depends_on:
+      - supervisor-agent
+      - repository-mapper
+      - code-analyzer
+      - docgenie-agent
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Monitoring and Observability
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+      - ./monitoring/rules:/etc/prometheus/rules:ro
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+      - '--storage.tsdb.retention.time=15d'
+    networks:
+      - codebase-genius-network
+    profiles:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./monitoring/grafana/plugins:/var/lib/grafana/plugins
+    networks:
+      - codebase-genius-network
+    profiles:
+      - monitoring
+
+  # ELK Stack for Centralized Logging
+  elasticsearch:
+    image: elasticsearch:8.8.0
+    container_name: elasticsearch
+    restart: unless-stopped
+    ports:
+      - "9200:9200"
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - codebase-genius-network
+    profiles:
+      - logging
+
+  logstash:
+    image: logstash:8.8.0
+    container_name: logstash
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/logstash/pipeline:/usr/share/logstash/pipeline:ro
+      - ./logs:/var/log/containers:ro
+    networks:
+      - codebase-genius-network
+    depends_on:
+      - elasticsearch
+    profiles:
+      - logging
+
+  kibana:
+    image: kibana:8.8.0
+    container_name: kibana
+    restart: unless-stopped
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - codebase-genius-network
+    depends_on:
+      - elasticsearch
+    profiles:
+      - logging
+
+  # Load Testing and Performance Monitoring
+  load-tester:
+    build:
+      context: .
+      dockerfile: Dockerfile.loadtest
+    container_name: load-tester
+    depends_on:
+      - supervisor-agent
+    environment:
+      - TARGET_URL=http://supervisor-agent:8080
+      - TEST_DURATION=300s
+      - CONCURRENT_USERS=20
+      - SPAWN_RATE=2
+    networks:
+      - codebase-genius-network
+    profiles:
+      - testing
+
+  # Development Tools
+  jupyter:
+    image: jupyter/scipy-notebook:latest
+    container_name: jupyter-dev
+    restart: unless-stopped
+    ports:
+      - "8888:8888"
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+    volumes:
+      - ./notebooks:/home/jovyan/work
+      - ./code:/home/jovyan/work/code
+    networks:
+      - codebase-genius-network
+    profiles:
+      - development
+
+volumes:
+  redis_data:
+  prometheus_data:
+  grafana_data:
+  elasticsearch_data:
+
+networks:
+  codebase-genius-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+# Development override for local development
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+---
+# docker-compose.dev.yml
+version: '3.8'
+
+services:
+  supervisor-agent:
+    build:
+      target: development
+    environment:
+      - SUPERVISOR_LOG_LEVEL=DEBUG
+      - PYTHONPATH=/app
+    volumes:
+      # Mount source code for hot reloading
+      - .:/app
+      - /app/__pycache__
+    command: ["python", "-m", "pytest", "tests/test_supervisor.py", "-v"]
+
+  repository-mapper:
+    volumes:
+      - ../repository-mapper:/app:ro
+
+  code-analyzer:
+    volumes:
+      - ../code-analyzer:/app:ro
+
+  docgenie-agent:
+    volumes:
+      - ../docgenie-agent:/app:ro
+
+# Production optimization
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
+---
+# docker-compose.prod.yml
+version: '3.8'
+
+services:
+  supervisor-agent:
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
+    environment:
+      - SUPERVISOR_LOG_LEVEL=WARN
+      - SUPERVISOR_MAX_CONCURRENT=10
+
+  repository-mapper:
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+
+  code-analyzer:
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+
+  docgenie-agent:
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 1.5G
+
+  nginx:
+    volumes:
+      - ./nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+    deploy:
+      replicas: 2
